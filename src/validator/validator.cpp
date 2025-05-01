@@ -1,18 +1,14 @@
 #include "validator.h"
 
-void Validator::validateArgsCmd(int argc, const char *const argv[]) {
+void Validator::validateArgsCmd(int argc, const char *const argv[]) const {
     validateArgCount(argc, argv[0]);
     validateFile(argv[1]);
 }
 
-void Validator::validateArgCount(int argc, const std::string &executableName) const {
+void Validator::validateArgCount(int argc, const char *executableName) const {
     if (argc != 2) {
-        throw std::invalid_argument(getUsageMessage(executableName));
+        throw std::invalid_argument(ValidatorMessages::getUsageMessage(executableName, FILE_EXTENSION));
     }
-}
-
-std::string Validator::getUsageMessage(const std::string &executableName) const noexcept {
-    return "Usage: " + executableName + " input" + FILE_EXTENSION;
 }
 
 void Validator::validateFile(const std::filesystem::path &inputPath) const {
@@ -24,19 +20,19 @@ void Validator::validateFile(const std::filesystem::path &inputPath) const {
 
 void Validator::validateFileExists(const std::filesystem::path &inputPath) const {
     if (!std::filesystem::exists(inputPath)) {
-        throw std::runtime_error(MESSAGE_FILE_NOT_FOUND);
+        throw std::runtime_error(ValidatorMessages::FILE_NOT_FOUND);
     }
 }
 
 void Validator::validateFileHasExtension(const std::filesystem::path &inputPath) const {
     if (!inputPath.has_extension()) {
-        throw std::runtime_error(MESSAGE_NO_EXTENSION);
+        throw std::runtime_error(ValidatorMessages::NO_EXTENSION);
     }
 }
 
 void Validator::validateFileExtension(const std::filesystem::path &inputPath) const {
     if (inputPath.extension() != FILE_EXTENSION) {
-        throw std::runtime_error(MESSAGE_INVALID_EXTENSION);
+        throw std::runtime_error(ValidatorMessages::INVALID_EXTENSION);
     }
 }
 

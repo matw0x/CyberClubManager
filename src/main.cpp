@@ -1,10 +1,11 @@
-#include "validator/validator.h"
+#include "manager/manager.h"
 
 int main(int argc, char* argv[]) {
-    Validator validator;
     try {
-        validator.validateArgsCmd(argc, argv);
+        Manager().run(argc, argv);
     } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
     }
+
+    return EXIT_SUCCESS;
 }

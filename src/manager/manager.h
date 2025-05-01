@@ -6,8 +6,12 @@
 
 class Manager {
    private:
-    Parser    parser;
-    Validator validator;
+    Validator validator_;
+    Parser    parser_;
+
+   public:
+    Manager() = default;
+    void run(int argc, const char* const argv[]) const;
 };
 
 #endif

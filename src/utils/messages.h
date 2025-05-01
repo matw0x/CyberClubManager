@@ -1,0 +1,28 @@
+#ifndef MESSAGES_H
+#define MESSAGES_H
+
+#include <format>
+#include <string>
+#include <string_view>
+
+namespace ValidatorMessages {
+inline static constexpr const char* FILE_NOT_FOUND    = "File does not exist";
+inline static constexpr const char* INVALID_EXTENSION = "Invalid file extension";
+inline static constexpr const char* NO_EXTENSION      = "File does not have an extension";
+
+static inline std::string getUsageMessage(std::string_view executableName, std::string_view fileExtension) {
+    return std::format("Usage: {} input{}", executableName, fileExtension);
+}
+}  // namespace ValidatorMessages
+
+namespace ParserMessages {}
+
+namespace EventMessages {
+inline static constexpr const char* YouShallNotPass  = "YouShallNotPass";
+inline static constexpr const char* NotOpenYet       = "NotOpenYet";
+inline static constexpr const char* PlaceIsBusy      = "PlaceIsBusy";
+inline static constexpr const char* ClientUnknown    = "ClientUnknown";
+inline static constexpr const char* ICanWaitNoLonger = "ICanWaitNoLonger!";
+}  // namespace EventMessages
+
+#endif
