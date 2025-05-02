@@ -5,17 +5,19 @@
 #include <vector>
 
 #include "event.h"
-#include "time.h"
 
 struct IConfig {
     unsigned int          tableCount;
     std::pair<Time, Time> workingHours;
     unsigned int          hourCost;
+    std::vector<Event>    events;
 };
 
 struct OConfig {
-    std::pair<Time, Time> workingHours;
-    std::vector<Event>    events;
+    Time               begin;
+    std::vector<Event> events;
+    Time               end;
+    // класс для выручки
 };
 
 #endif
