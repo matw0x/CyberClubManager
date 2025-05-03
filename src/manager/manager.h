@@ -14,7 +14,7 @@ class Manager {
 
    public:
     Manager() = default;
-    void run(int argc, const char* const argv[]) const;
+    void run(int argc, const char* const argv[]);
 };
 
 #endif

@@ -2,9 +2,11 @@
 #define VALIDATOR_H
 
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <string>
 
+#include "../utils/config.h"
 #include "../utils/messages.h"
 
 class Validator {
@@ -16,11 +18,11 @@ class Validator {
     void validateFileHasExtension(const std::filesystem::path& inputPath) const;
     void validateFileExtension(const std::filesystem::path& inputPath) const;
     void validateFileExists(const std::filesystem::path& inputPath) const;
-    void validateFileContent(const std::filesystem::path& inputPath) const;
 
    public:
     Validator() = default;
-    void validateArgsCmd(int argc, const char* const argv[]) const;
+    void         validateArgsCmd(int argc, const char* const argv[]) const;
+    unsigned int validateTableCount(const std::string& tableCountLine) const;
 };
 
 #endif

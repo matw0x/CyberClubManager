@@ -1,5 +1,9 @@
 #include "validator.h"
 
+#include <cctype>
+#include <stdexcept>
+#include <string>
+
 void Validator::validateArgsCmd(int argc, const char *const argv[]) const {
     validateArgCount(argc, argv[0]);
     validateFile(argv[1]);
@@ -15,7 +19,6 @@ void Validator::validateFile(const std::filesystem::path &inputPath) const {
     validateFileHasExtension(inputPath);
     validateFileExtension(inputPath);
     validateFileExists(inputPath);
-    validateFileContent(inputPath);
 }
 
 void Validator::validateFileExists(const std::filesystem::path &inputPath) const {
@@ -36,6 +39,30 @@ void Validator::validateFileExtension(const std::filesystem::path &inputPath) co
     }
 }
 
-void Validator::validateFileContent(const std::filesystem::path &inputPath) const {
-    //
+unsigned int Validator::validateTableCount(const std::string &tableCountLine) const {
+    const char firstSymbol = *tableCountLine.begin();
+    if (!std::isdigit(firstSymbol) || firstSymbol == '0') {
+        throw std::runtime_error(
+            std::format("{}{}{}", ParserMessages::NOT_NUMBER, ParserMessages::BAD_LINE, tableCountLine));
+    }
+
+    for (auto it = tableCountLine.begin() + 1; it != tableCountLine.end(); ++it) {
+        if (!std::isdigit(*it)) {
+            throw std::runtime_error(
+                std::format("{}{}{}", ParserMessages::OUT_OF_RANGE, ParserMessages::BAD_LINE, tableCountLine));
+        }
+    }
+
+    try {
+        auto result = std::stoul(tableCountLine);
+        if (result > std::numeric_limits<unsigned int>::max()) {
+            throw std::runtime_error(
+                std::format("{}{}{}", ParserMessages::OUT_OF_RANGE, ParserMessages::BAD_LINE, tableCountLine));
+        }
+
+        return static_cast<unsigned int>(result);
+    } catch (const std::exception &) {
+        throw std::runtime_error(
+            std::format("{}{}{}", ParserMessages::OUT_OF_RANGE, ParserMessages::BAD_LINE, tableCountLine));
+    }
 }
