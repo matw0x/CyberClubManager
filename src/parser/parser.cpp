@@ -20,7 +20,10 @@ unsigned int Parser::parseTableCount(std::ifstream& inputFile, const Validator& 
 }
 
 std::pair<Time, Time> Parser::parseWorkingHours(std::ifstream& inputFile, const Validator& validator) const {
-    return {};
+    std::string line;
+    std::getline(inputFile, line);
+
+    return validator.validateWorkingHours(line);
 }
 
 unsigned int Parser::parseHourCost(std::ifstream& inputFile, const Validator& validator) const { return {}; }

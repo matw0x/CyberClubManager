@@ -16,10 +16,10 @@ static inline std::string getUsageMessage(std::string_view executableName, std::
 }  // namespace ValidatorMessages
 
 namespace ParserMessages {
-inline static constexpr const char* BAD_LINE       = "Bad line = ";
-inline static constexpr const char* NOT_NUMBER     = "This is not number. ";
-inline static constexpr const char* INVALID_FORMAT = "Invalid format. ";
-inline static constexpr const char* OUT_OF_RANGE   = "The number is out of range. ";
+inline static constexpr const char* BAD_LINE       = "Bad line =";
+inline static constexpr const char* NOT_NUMBER     = "This is not number.";
+inline static constexpr const char* INVALID_FORMAT = "Invalid format.";
+inline static constexpr const char* OUT_OF_RANGE   = "The number is out of range.";
 }  // namespace ParserMessages
 
 namespace EventMessages {

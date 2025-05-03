@@ -1,6 +1,7 @@
 #include "validator.h"
 
 #include <cctype>
+#include <complex>
 #include <stdexcept>
 #include <string>
 
@@ -43,13 +44,13 @@ unsigned int Validator::validateTableCount(const std::string &tableCountLine) co
     const char firstSymbol = *tableCountLine.begin();
     if (!std::isdigit(firstSymbol) || firstSymbol == '0') {
         throw std::runtime_error(
-            std::format("{}{}{}", ParserMessages::NOT_NUMBER, ParserMessages::BAD_LINE, tableCountLine));
+            std::format("{} {} {}", ParserMessages::NOT_NUMBER, ParserMessages::BAD_LINE, tableCountLine));
     }
 
     for (auto it = tableCountLine.begin() + 1; it != tableCountLine.end(); ++it) {
         if (!std::isdigit(*it)) {
             throw std::runtime_error(
-                std::format("{}{}{}", ParserMessages::OUT_OF_RANGE, ParserMessages::BAD_LINE, tableCountLine));
+                std::format("{} {} {}", ParserMessages::NOT_NUMBER, ParserMessages::BAD_LINE, tableCountLine));
         }
     }
 
@@ -57,12 +58,26 @@ unsigned int Validator::validateTableCount(const std::string &tableCountLine) co
         auto result = std::stoul(tableCountLine);
         if (result > std::numeric_limits<unsigned int>::max()) {
             throw std::runtime_error(
-                std::format("{}{}{}", ParserMessages::OUT_OF_RANGE, ParserMessages::BAD_LINE, tableCountLine));
+                std::format("{} {} {}", ParserMessages::OUT_OF_RANGE, ParserMessages::BAD_LINE, tableCountLine));
         }
 
         return static_cast<unsigned int>(result);
     } catch (const std::exception &) {
         throw std::runtime_error(
-            std::format("{}{}{}", ParserMessages::OUT_OF_RANGE, ParserMessages::BAD_LINE, tableCountLine));
+            std::format("{} {} {}", ParserMessages::OUT_OF_RANGE, ParserMessages::BAD_LINE, tableCountLine));
     }
+}
+
+std::pair<Time, Time> Validator::validateWorkingHours(const std::string &workingHoursLine) const {
+    std::istringstream stream(workingHoursLine);
+    std::string        begin, end;
+
+    stream >> begin >> end;
+
+    if (begin.size() != Time::NORMAL_STRING_TIME_SIZE || end.size() != Time::NORMAL_STRING_TIME_SIZE) {
+        throw std::invalid_argument(
+            std::format("{} {} {}", ParserMessages::INVALID_FORMAT, ParserMessages::BAD_LINE, workingHoursLine));
+    }
+
+    return {Time::parse(begin), Time::parse(end)};
 }
