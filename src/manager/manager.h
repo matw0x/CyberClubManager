@@ -13,7 +13,6 @@ class Manager {
     OConfig   outputConfig_;
 
    public:
-    Manager() = default;
     void run(int argc, const char* const argv[]);
 };
 

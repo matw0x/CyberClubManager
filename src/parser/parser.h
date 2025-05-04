@@ -12,7 +12,6 @@
 
 class Parser {
    public:
-    Parser() = default;
     IConfig parseInputConfig(const std::filesystem::path& inputFile, Validator& validator) const;
 
    private:

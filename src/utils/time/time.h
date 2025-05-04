@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "messages.h"
+#include "../messages.h"
 
 #ifndef TIME_H
 #define TIME_H

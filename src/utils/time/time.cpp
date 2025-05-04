@@ -1,6 +1,6 @@
 #include "time.h"
 
-#include "exception.h"
+#include "../exception.h"
 
 Time::Time() : minutes_{} {}
 
