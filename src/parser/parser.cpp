@@ -4,19 +4,19 @@ IConfig Parser::parseInputConfig(const std::filesystem::path& inputPath, const V
     std::ifstream inputFile(inputPath, std::ios::in);
     IConfig       inputConfig;
 
-    inputConfig.tableCount   = parseTableCount(inputFile, validator);
+    inputConfig.tableCount   = parsePositiveNumber(inputFile, validator);
     inputConfig.workingHours = parseWorkingHours(inputFile, validator);
-    inputConfig.hourCost     = parseHourCost(inputFile, validator);
+    inputConfig.hourCost     = parsePositiveNumber(inputFile, validator);
     inputConfig.events       = parseEvents(inputFile, validator);
 
     return inputConfig;
 }
 
-unsigned int Parser::parseTableCount(std::ifstream& inputFile, const Validator& validator) const {
+unsigned int Parser::parsePositiveNumber(std::ifstream& inputFile, const Validator& validator) const {
     std::string line;
     std::getline(inputFile, line);
 
-    return validator.validateTableCount(line);
+    return validator.validatePositiveNumber(line);
 }
 
 std::pair<Time, Time> Parser::parseWorkingHours(std::ifstream& inputFile, const Validator& validator) const {
@@ -26,6 +26,13 @@ std::pair<Time, Time> Parser::parseWorkingHours(std::ifstream& inputFile, const 
     return validator.validateWorkingHours(line);
 }
 
-unsigned int Parser::parseHourCost(std::ifstream& inputFile, const Validator& validator) const { return {}; }
+std::vector<Event> Parser::parseEvents(std::ifstream& inputFile, const Validator& validator) const {
+    std::vector<Event> events;
+    std::string        line;
 
-std::vector<Event> Parser::parseEvents(std::ifstream& inputFile, const Validator& validator) const { return {}; }
+    while (std::getline(inputFile, line)) {
+        events.push_back(validator.validateIEvent(line));
+    }
+
+    return events;
+}

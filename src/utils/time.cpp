@@ -1,6 +1,6 @@
 #include "time.h"
 
-#include <stdexcept>
+#include "exception.h"
 
 Time::Time() : minutes_{} {}
 
@@ -14,7 +14,7 @@ Time Time::parse(const std::string& timeString) {
         return Time(hours * 60 + minutes);
     }
 
-    throw std::runtime_error({});
+    throwRuntimeError();
 }
 
 Time Time::operator-(const Time& other) const { return Time(minutes_ - other.minutes_); }

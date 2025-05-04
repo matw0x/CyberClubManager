@@ -20,6 +20,8 @@ inline static constexpr const char* BAD_LINE       = "Bad line =";
 inline static constexpr const char* NOT_NUMBER     = "This is not number.";
 inline static constexpr const char* INVALID_FORMAT = "Invalid format.";
 inline static constexpr const char* OUT_OF_RANGE   = "The number is out of range.";
+inline static constexpr const char* EMPTY_LINE     = "Empty line.";
+inline static constexpr const char* NO_INPUT_DATA  = "This is not input data.";
 }  // namespace ParserMessages
 
 namespace EventMessages {

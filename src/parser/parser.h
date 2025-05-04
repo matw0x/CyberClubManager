@@ -16,9 +16,8 @@ class Parser {
     IConfig parseInputConfig(const std::filesystem::path& inputFile, const Validator& validator) const;
 
    private:
-    unsigned int          parseTableCount(std::ifstream& inputFile, const Validator& validator) const;
+    unsigned int          parsePositiveNumber(std::ifstream& inputFile, const Validator& validator) const;
     std::pair<Time, Time> parseWorkingHours(std::ifstream& inputFile, const Validator& validator) const;
-    unsigned int          parseHourCost(std::ifstream& inputFile, const Validator& validator) const;
     std::vector<Event>    parseEvents(std::ifstream& inputFile, const Validator& validator) const;
 };
 
