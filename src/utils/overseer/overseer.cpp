@@ -1,5 +1,7 @@
 #include "overseer.h"
 
+#include <cstdlib>
+
 std::vector<Revenue> Overseer::getRevenue() const noexcept { return revenues_; }
 
 void Overseer::prepare(unsigned int tableCount) noexcept { revenues_.resize(tableCount); }
@@ -18,6 +20,11 @@ void Overseer::freeTable(const std::string& clientName) noexcept {
     }
 }
 
+void Overseer::eraseFromClub(const std::string& clientName) noexcept {
+    freeTable(clientName);
+    freeSession(clientName);
+}
+
 void Overseer::freeSession(const std::string& clientName) noexcept { sessionsCT_.erase(clientName); }
 
 void Overseer::addWaitingQueue(const std::string& clientName) noexcept { waitingQueue_.push(clientName); }
@@ -25,8 +32,6 @@ void Overseer::addWaitingQueue(const std::string& clientName) noexcept { waiting
 bool Overseer::isWaitingQueueOverflow() const noexcept { return waitingQueue_.size() > revenues_.size(); }
 
 void Overseer::putClient(const std::string& clientName, unsigned int tableNumber) noexcept {
-    freeTable(clientName);
-
     sessionsCT_[clientName]  = tableNumber;
     sessionsTC_[tableNumber] = clientName;
 }
@@ -48,3 +53,31 @@ std::string Overseer::whoSitting(unsigned int tableNumber) const noexcept {
 }
 
 bool Overseer::anyTablesFree() const noexcept { return revenues_.size() > sessionsTC_.size(); }
+
+std::string Overseer::getFirstWaiter() noexcept {
+    if (waitingQueue_.empty()) {
+        return {};
+    }
+
+    auto clientName = waitingQueue_.front();
+    waitingQueue_.pop();
+
+    return clientName;
+}
+
+std::vector<std::string> Overseer::getRemainings() const noexcept {
+    std::vector<std::string> remainings(sessionsCT_.size() + waitingQueue_.size());
+    size_t                   currentIndex = 0;
+
+    for (const auto& pair : sessionsCT_) {
+        remainings[currentIndex++] = pair.first;
+    }
+
+    auto tempQueue = waitingQueue_;
+    while (!tempQueue.empty()) {
+        remainings[currentIndex++] = tempQueue.front();
+        tempQueue.pop();
+    }
+
+    return remainings;
+}

@@ -1,5 +1,8 @@
 #include "manager.h"
 
+#include <algorithm>
+#include <format>
+
 void Manager::run(int argc, const char* const argv[]) {
     validator_.validateArgsCmd(argc, argv);
     inputConfig_ = parser_.parseInputConfig(argv[1], validator_);
@@ -52,6 +55,7 @@ void Manager::handleClientSat(Event& event) noexcept {
         return;
     }
 
+    overseer_.freeTable(event.clientNameOrMsg);
     overseer_.putClient(event.clientNameOrMsg, *event.tableNumber);
 }
 
@@ -63,12 +67,31 @@ void Manager::handleClientWaiting(Event& event) noexcept {
     }
 
     if (overseer_.isWaitingQueueOverflow()) {
-        overseer_.freeSession(event.clientNameOrMsg);
+        overseer_.eraseFromClub(event.clientNameOrMsg);
         event.type = EventType::OUTPUT_CLIENT_KICK;
+        return;
     }
+
+    overseer_.addWaitingQueue(event.clientNameOrMsg);
 }
 
-void Manager::handleClientLeft(Event& event) const noexcept {}
+void Manager::handleClientLeft(Event& event) noexcept {
+    if (!overseer_.isClientInside(event.clientNameOrMsg)) {
+        event.clientNameOrMsg = EventMessages::ClientUnknown;
+        event.type            = EventType::OUTPUT_ERROR;
+        return;
+    }
+
+    auto tableNumber = overseer_.getTable(event.clientNameOrMsg);
+    overseer_.eraseFromClub(event.clientNameOrMsg);
+
+    if (auto clientName = overseer_.getFirstWaiter(); !clientName.empty() && tableNumber) {
+        overseer_.putClient(clientName, *tableNumber);
+        event.type            = EventType::OUTPUT_CLIENT_SAT;
+        event.clientNameOrMsg = clientName;
+        event.tableNumber     = tableNumber;
+    }
+}
 
 void Manager::analyzeEvent(Event& event) noexcept {
     switch (event.type) {
@@ -86,14 +109,16 @@ void Manager::analyzeEvent(Event& event) noexcept {
 }
 
 void Manager::printEvent(const Event& event, bool error) const noexcept {
-    if (error || !event.tableNumber) {
-        std::cout << std::format("{} {} {}\n", event.time.format(), static_cast<unsigned int>(event.type),
-                                 event.clientNameOrMsg);
+    if (event.type == EventType::INPUT_CLIENT_SAT || event.type == EventType::OUTPUT_CLIENT_SAT) {
+        std::cout << std::format("{} {} {} {}\n", event.time.format(), static_cast<unsigned int>(event.type),
+                                 event.clientNameOrMsg, *event.tableNumber);
         return;
     }
 
-    std::cout << std::format("{} {} {} {}\n", event.time.format(), static_cast<unsigned int>(event.type),
-                             event.clientNameOrMsg, *event.tableNumber);
+    if (error || !event.tableNumber) {
+        std::cout << std::format("{} {} {}\n", event.time.format(), static_cast<unsigned int>(event.type),
+                                 event.clientNameOrMsg);
+    }
 }
 
 void Manager::printEventIfError(const Event& originalEvent, const Event& maybeErrorEvent) const noexcept {
@@ -115,6 +140,19 @@ void Manager::processEvents() noexcept {
 void Manager::monitor() noexcept {
     printBeginWorkingTime();
     processEvents();
+    printRemainings();
     printEndWorkingTime();
     printRevenue();
+}
+
+void Manager::printRemainings() const noexcept {
+    auto       remainings = overseer_.getRemainings();
+    const auto endTime    = inputConfig_.workingHours.second.format();
+    const auto eventType  = static_cast<unsigned int>(EventType::OUTPUT_CLIENT_KICK);
+
+    std::sort(remainings.begin(), remainings.end());
+
+    for (std::string_view clientName : remainings) {
+        std::cout << std::format("{} {} {}\n", endTime, eventType, clientName);
+    }
 }
