@@ -11,4 +11,5 @@ add_executable(
     src/parser/parser.cpp
     src/validator/validator.cpp
     src/utils/time/time.cpp
+    src/utils/overseer/overseer.cpp
 )

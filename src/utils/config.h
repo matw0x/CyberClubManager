@@ -14,11 +14,4 @@ struct IConfig {
     std::vector<Event>    events;
 };
 
-struct OConfig {
-    Time                 begin;
-    std::vector<Event>   events;
-    Time                 end;
-    std::vector<Revenue> revenues;
-};
-
 #endif

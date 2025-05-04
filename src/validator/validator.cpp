@@ -185,9 +185,9 @@ Event Validator::validateIEvent(std::string_view eventLine) {
             std::format("{} {} {}", ParserMessages::INVALID_FORMAT, ParserMessages::BAD_LINE, eventLine));
     }
 
-    event.type        = validateIEventType(maybeEventType, eventLine);
-    event.clientName  = validateClientName(maybeClientName, eventLine);
-    event.tableNumber = validateTableNumber(maybeTableNum, event.type, eventLine);
+    event.type            = validateIEventType(maybeEventType, eventLine);
+    event.clientNameOrMsg = validateClientName(maybeClientName, eventLine);
+    event.tableNumber     = validateTableNumber(maybeTableNum, event.type, eventLine);
 
     return event;
 }

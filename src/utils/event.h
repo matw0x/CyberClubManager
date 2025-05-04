@@ -20,9 +20,8 @@ enum class EventType {
 struct Event {
     Time                        time;
     EventType                   type;
-    std::optional<std::string>  clientName;
+    std::string                 clientNameOrMsg;
     std::optional<unsigned int> tableNumber;
-    std::optional<std::string>  message{};
 };
 
 #endif

@@ -3,6 +3,7 @@
 
 #include "../parser/parser.h"
 #include "../utils/config.h"
+#include "../utils/overseer/overseer.h"
 #include "../validator/validator.h"
 
 class Manager {
@@ -10,7 +11,17 @@ class Manager {
     Validator validator_;
     Parser    parser_;
     IConfig   inputConfig_;
-    OConfig   outputConfig_;
+    Overseer  overseer_;
+
+    void monitor() noexcept;
+    void printBeginWorkingTime() const noexcept;
+    void printEndWorkingTime() const noexcept;
+    void printRevenue() const noexcept;
+    void printEvent(const Event& event) const noexcept;
+    void processEvents() noexcept;
+    void analyzeEvent(Event& event) const noexcept;
+    void printEventIfError(const Event& originalEvent, const Event& maybeErrorEvent) const noexcept;
+    void handleClientArrived(Event& event) const noexcept;
 
    public:
     void run(int argc, const char* const argv[]);
