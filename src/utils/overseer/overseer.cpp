@@ -4,8 +4,41 @@ std::vector<Revenue> Overseer::getRevenue() const noexcept { return revenues_; }
 
 void Overseer::prepare(unsigned int tableCount) noexcept { revenues_.resize(tableCount); }
 
-bool Overseer::isClientInside(const std::string& clientName) const noexcept { return sessions_.contains(clientName); }
+bool Overseer::isClientInside(const std::string& clientName) const noexcept { return sessionsCT_.contains(clientName); }
 
 bool Overseer::isClubWorking(Time clientArrivalTime, std::pair<Time, Time> workingHours) const noexcept {
     return workingHours.first <= clientArrivalTime && clientArrivalTime < workingHours.second;
 }
+
+void Overseer::createClientSession(const std::string& clientName) noexcept { sessionsCT_[clientName] = {}; }
+
+void Overseer::freeTable(const std::string& clientName) noexcept {
+    if (auto currentTable = getTable(clientName); currentTable) {
+        sessionsTC_.erase(*currentTable);
+    }
+}
+
+void Overseer::putClient(const std::string& clientName, unsigned int tableNumber) noexcept {
+    freeTable(clientName);
+
+    sessionsCT_[clientName]  = tableNumber;
+    sessionsTC_[tableNumber] = clientName;
+}
+
+std::optional<unsigned int> Overseer::getTable(const std::string& clientName) const noexcept {
+    if (auto it = sessionsCT_.find(clientName); it != sessionsCT_.end()) {
+        return it->second;
+    }
+
+    return {};
+}
+
+std::string Overseer::whoSitting(unsigned int tableNumber) const noexcept {
+    if (auto it = sessionsTC_.find(tableNumber); it != sessionsTC_.end()) {
+        return it->second;
+    }
+
+    return {};
+}
+
+bool Overseer::anyTablesFree() const noexcept { return revenues_.size() > sessionsTC_.size(); }

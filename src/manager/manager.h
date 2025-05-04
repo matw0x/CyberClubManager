@@ -19,9 +19,12 @@ class Manager {
     void printRevenue() const noexcept;
     void printEvent(const Event& event) const noexcept;
     void processEvents() noexcept;
-    void analyzeEvent(Event& event) const noexcept;
+    void analyzeEvent(Event& event) noexcept;
     void printEventIfError(const Event& originalEvent, const Event& maybeErrorEvent) const noexcept;
-    void handleClientArrived(Event& event) const noexcept;
+    void handleClientArrived(Event& event) noexcept;
+    void handleClientSat(Event& event) noexcept;
+    void handleClientWaiting(Event& event) const noexcept;
+    void handleClientLeft(Event& event) const noexcept;
 
    public:
     void run(int argc, const char* const argv[]);

@@ -22,27 +22,58 @@ void Manager::printRevenue() const noexcept {
     }
 }
 
-void Manager::handleClientArrived(Event& event) const noexcept {
+void Manager::handleClientArrived(Event& event) noexcept {
     if (!overseer_.isClubWorking(event.time, inputConfig_.workingHours)) {
         event.clientNameOrMsg = EventMessages::NotOpenYet;
         event.type            = EventType::OUTPUT_ERROR;
-    } else if (overseer_.isClientInside(event.clientNameOrMsg)) {
+        return;
+    }
+
+    if (overseer_.isClientInside(event.clientNameOrMsg)) {
         event.clientNameOrMsg = EventMessages::YouShallNotPass;
+        event.type            = EventType::OUTPUT_ERROR;
+        return;
+    }
+
+    overseer_.createClientSession(event.clientNameOrMsg);
+}
+
+void Manager::handleClientSat(Event& event) noexcept {
+    if (!overseer_.isClientInside(event.clientNameOrMsg)) {
+        event.clientNameOrMsg = EventMessages::ClientUnknown;
+        event.type            = EventType::OUTPUT_ERROR;
+        return;
+    }
+
+    auto clientName = overseer_.whoSitting(*event.tableNumber);
+    if (!clientName.empty()) {
+        event.clientNameOrMsg = EventMessages::PlaceIsBusy;
+        event.type            = EventType::OUTPUT_ERROR;
+        return;
+    }
+
+    overseer_.putClient(event.clientNameOrMsg, *event.tableNumber);
+}
+
+void Manager::handleClientWaiting(Event& event) const noexcept {
+    if (overseer_.anyTablesFree()) {
+        event.clientNameOrMsg = EventMessages::ICanWaitNoLonger;
         event.type            = EventType::OUTPUT_ERROR;
     }
 }
 
-void Manager::analyzeEvent(Event& event) const noexcept {
+void Manager::handleClientLeft(Event& event) const noexcept {}
+
+void Manager::analyzeEvent(Event& event) noexcept {
     switch (event.type) {
         case EventType::INPUT_CLIENT_ARRIVED:
-            handleClientArrived(event);
-            return;
+            return handleClientArrived(event);
         case EventType::INPUT_CLIENT_SAT:
-            return;
+            return handleClientSat(event);
         case EventType::INPUT_CLIENT_WAITING:
-            return;
+            return handleClientWaiting(event);
         case EventType::INPUT_CLIENT_LEFT:
-            return;
+            return handleClientLeft(event);
         default:
             return;
     }
