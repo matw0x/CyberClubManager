@@ -55,10 +55,16 @@ void Manager::handleClientSat(Event& event) noexcept {
     overseer_.putClient(event.clientNameOrMsg, *event.tableNumber);
 }
 
-void Manager::handleClientWaiting(Event& event) const noexcept {
+void Manager::handleClientWaiting(Event& event) noexcept {
     if (overseer_.anyTablesFree()) {
         event.clientNameOrMsg = EventMessages::ICanWaitNoLonger;
         event.type            = EventType::OUTPUT_ERROR;
+        return;
+    }
+
+    if (overseer_.isWaitingQueueOverflow()) {
+        overseer_.freeSession(event.clientNameOrMsg);
+        event.type = EventType::OUTPUT_CLIENT_KICK;
     }
 }
 
@@ -79,14 +85,21 @@ void Manager::analyzeEvent(Event& event) noexcept {
     }
 }
 
-void Manager::printEvent(const Event& event) const noexcept {
-    std::cout << std::format("{} {} {}\n", event.time.format(), static_cast<unsigned int>(event.type),
-                             event.clientNameOrMsg);
+void Manager::printEvent(const Event& event, bool error) const noexcept {
+    if (error || !event.tableNumber) {
+        std::cout << std::format("{} {} {}\n", event.time.format(), static_cast<unsigned int>(event.type),
+                                 event.clientNameOrMsg);
+        return;
+    }
+
+    std::cout << std::format("{} {} {} {}\n", event.time.format(), static_cast<unsigned int>(event.type),
+                             event.clientNameOrMsg, *event.tableNumber);
 }
 
 void Manager::printEventIfError(const Event& originalEvent, const Event& maybeErrorEvent) const noexcept {
-    if (originalEvent.clientNameOrMsg != maybeErrorEvent.clientNameOrMsg) {
-        printEvent(maybeErrorEvent);
+    if (originalEvent.clientNameOrMsg != maybeErrorEvent.clientNameOrMsg ||
+        originalEvent.type != maybeErrorEvent.type) {
+        printEvent(maybeErrorEvent, true);
     }
 }
 

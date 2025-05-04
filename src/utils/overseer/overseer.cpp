@@ -18,6 +18,12 @@ void Overseer::freeTable(const std::string& clientName) noexcept {
     }
 }
 
+void Overseer::freeSession(const std::string& clientName) noexcept { sessionsCT_.erase(clientName); }
+
+void Overseer::addWaitingQueue(const std::string& clientName) noexcept { waitingQueue_.push(clientName); }
+
+bool Overseer::isWaitingQueueOverflow() const noexcept { return waitingQueue_.size() > revenues_.size(); }
+
 void Overseer::putClient(const std::string& clientName, unsigned int tableNumber) noexcept {
     freeTable(clientName);
 

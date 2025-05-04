@@ -17,13 +17,13 @@ class Manager {
     void printBeginWorkingTime() const noexcept;
     void printEndWorkingTime() const noexcept;
     void printRevenue() const noexcept;
-    void printEvent(const Event& event) const noexcept;
+    void printEvent(const Event& event, bool error = false) const noexcept;
     void processEvents() noexcept;
     void analyzeEvent(Event& event) noexcept;
     void printEventIfError(const Event& originalEvent, const Event& maybeErrorEvent) const noexcept;
     void handleClientArrived(Event& event) noexcept;
     void handleClientSat(Event& event) noexcept;
-    void handleClientWaiting(Event& event) const noexcept;
+    void handleClientWaiting(Event& event) noexcept;
     void handleClientLeft(Event& event) const noexcept;
 
    public:

@@ -1,6 +1,7 @@
 #ifndef OVERSEER_H
 #define OVERSEER_H
 
+#include <queue>
 #include <unordered_map>
 #include <vector>
 
@@ -11,6 +12,7 @@ class Overseer {
     std::unordered_map<std::string, std::optional<unsigned int>> sessionsCT_;
     std::unordered_map<unsigned int, std::string>                sessionsTC_;
     std::vector<Revenue>                                         revenues_;
+    std::queue<std::string>                                      waitingQueue_;
 
     std::optional<unsigned int> getTable(const std::string& clientName) const noexcept;
     void                        freeTable(const std::string& clientName) noexcept;
@@ -24,6 +26,9 @@ class Overseer {
     std::string          whoSitting(unsigned int tableNumber) const noexcept;
     void                 putClient(const std::string& clientName, unsigned int tableNumber) noexcept;
     bool                 anyTablesFree() const noexcept;
+    bool                 isWaitingQueueOverflow() const noexcept;
+    void                 freeSession(const std::string& clientName) noexcept;
+    void                 addWaitingQueue(const std::string& clientName) noexcept;
 };
 
 #endif
