@@ -3,7 +3,6 @@
 
 #include <optional>
 #include <string>
-#include <vector>
 
 #include "time.h"
 
@@ -23,7 +22,7 @@ struct Event {
     EventType                   type;
     std::optional<std::string>  clientName;
     std::optional<unsigned int> tableNumber;
-    std::optional<std::string>  message;
+    std::optional<std::string>  message{};
 };
 
 #endif

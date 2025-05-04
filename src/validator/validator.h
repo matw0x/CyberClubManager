@@ -15,6 +15,9 @@ class Validator {
     friend class Parser;
 
    private:
+    unsigned int tableLimit_;
+    Time         lastActivity_;
+
     inline static constexpr const char* FILE_EXTENSION = ".txt";
 
     void                  validateArgCount(int argc, const char* executableName) const;
@@ -25,15 +28,18 @@ class Validator {
     void                  validateEmptyLine(std::string_view line) const;
     unsigned int          validatePositiveNumber(std::string_view numberLine) const;
     std::pair<Time, Time> validateWorkingHours(std::string_view workingHoursLine) const;
-    Event                 validateIEvent(std::string_view eventLine) const;
+    Event                 validateIEvent(std::string_view eventLine);
     void                  validateTimeFormatSize(std::string_view maybeTime, std::string_view exceptionPhrase) const;
     EventType             validateIEventType(std::string_view maybeIEventType, std::string_view exceptionPhrase) const;
     std::string validateClientName(const std::string& maybeClientName, std::string_view exceptionPhrase) const;
     std::optional<unsigned int> validateTableNumber(std::string_view maybeTableNumber, EventType eventType,
                                                     std::string_view exceptionPhrase) const;
+    void                        setLastActivity(Time currentActivity);
+    void                        setTableLimit(unsigned int tableLimit) noexcept;
 
    public:
     Validator() = default;
+
     void validateArgsCmd(int argc, const char* const argv[]) const;
 };
 

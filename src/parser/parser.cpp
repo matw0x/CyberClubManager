@@ -1,10 +1,11 @@
 #include "parser.h"
 
-IConfig Parser::parseInputConfig(const std::filesystem::path& inputPath, const Validator& validator) const {
+IConfig Parser::parseInputConfig(const std::filesystem::path& inputPath, Validator& validator) const {
     std::ifstream inputFile(inputPath, std::ios::in);
     IConfig       inputConfig;
 
-    inputConfig.tableCount   = parsePositiveNumber(inputFile, validator);
+    inputConfig.tableCount = parsePositiveNumber(inputFile, validator);
+    validator.setTableLimit(inputConfig.tableCount);
     inputConfig.workingHours = parseWorkingHours(inputFile, validator);
     inputConfig.hourCost     = parsePositiveNumber(inputFile, validator);
     inputConfig.events       = parseEvents(inputFile, validator);
@@ -26,7 +27,7 @@ std::pair<Time, Time> Parser::parseWorkingHours(std::ifstream& inputFile, const 
     return validator.validateWorkingHours(line);
 }
 
-std::vector<Event> Parser::parseEvents(std::ifstream& inputFile, const Validator& validator) const {
+std::vector<Event> Parser::parseEvents(std::ifstream& inputFile, Validator& validator) const {
     std::vector<Event> events;
     std::string        line;
 

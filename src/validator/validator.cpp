@@ -1,7 +1,6 @@
 #include "validator.h"
 
 #include <cctype>
-#include <optional>
 
 void Validator::validateArgsCmd(int argc, const char *const argv[]) const {
     validateArgCount(argc, argv[0]);
@@ -148,7 +147,12 @@ std::optional<unsigned int> Validator::validateTableNumber(std::string_view mayb
         }
 
         try {
-            return validatePositiveNumber(maybeTableNumber);
+            auto table = validatePositiveNumber(maybeTableNumber);
+            if (table > tableLimit_) {
+                throwRuntimeError();
+            }
+
+            return table;
         } catch (const std::exception &) {
             throwRuntimeError(
                 std::format("{} {} {}", ParserMessages::INVALID_FORMAT, ParserMessages::BAD_LINE, exceptionPhrase));
@@ -163,7 +167,7 @@ std::optional<unsigned int> Validator::validateTableNumber(std::string_view mayb
     return tableNumber;
 }
 
-Event Validator::validateIEvent(std::string_view eventLine) const {
+Event Validator::validateIEvent(std::string_view eventLine) {
     validateEmptyLine(eventLine);
     Event              event;
     std::istringstream stream(eventLine.data());
@@ -175,6 +179,7 @@ Event Validator::validateIEvent(std::string_view eventLine) const {
 
     try {
         event.time = Time::parse(maybeTime);
+        setLastActivity(event.time);
     } catch (const std::exception &) {
         throwInvalidArgument(
             std::format("{} {} {}", ParserMessages::INVALID_FORMAT, ParserMessages::BAD_LINE, eventLine));
@@ -183,7 +188,16 @@ Event Validator::validateIEvent(std::string_view eventLine) const {
     event.type        = validateIEventType(maybeEventType, eventLine);
     event.clientName  = validateClientName(maybeClientName, eventLine);
     event.tableNumber = validateTableNumber(maybeTableNum, event.type, eventLine);
-    event.message     = {};
 
     return event;
+}
+
+void Validator::setTableLimit(unsigned int tableLimit) noexcept { tableLimit_ = tableLimit; }
+
+void Validator::setLastActivity(Time currentActivity) {
+    if (currentActivity < lastActivity_) {
+        throwRuntimeError();
+    }
+
+    lastActivity_ = currentActivity;
 }
