@@ -2,6 +2,7 @@
 #define OVERSEER_H
 
 #include <queue>
+#include <set>
 #include <unordered_map>
 #include <vector>
 
@@ -11,12 +12,15 @@ class Overseer {
    private:
     std::unordered_map<std::string, std::optional<unsigned int>> sessionsCT_;
     std::unordered_map<unsigned int, std::string>                sessionsTC_;
+    std::unordered_map<unsigned int, Time>                       startSessionsTC_;
     std::vector<Revenue>                                         revenues_;
     std::queue<std::string>                                      waitingQueue_;
 
     void freeSession(const std::string& clientName) noexcept;
 
    public:
+    void                        startCalculate(unsigned int tableNumber, Time start) noexcept;
+    void                        calculateRevenue() noexcept;
     void                        freeTable(const std::string& clientName) noexcept;
     std::optional<unsigned int> getTable(const std::string& clientName) const noexcept;
     std::vector<Revenue>        getRevenue() const noexcept;

@@ -1,8 +1,5 @@
 #include "manager.h"
 
-#include <algorithm>
-#include <format>
-
 void Manager::run(int argc, const char* const argv[]) {
     validator_.validateArgsCmd(argc, argv);
     inputConfig_ = parser_.parseInputConfig(argv[1], validator_);
@@ -146,13 +143,13 @@ void Manager::monitor() noexcept {
 }
 
 void Manager::printRemainings() const noexcept {
-    auto       remainings = overseer_.getRemainings();
-    const auto endTime    = inputConfig_.workingHours.second.format();
-    const auto eventType  = static_cast<unsigned int>(EventType::OUTPUT_CLIENT_KICK);
+    auto       totalRemainings = overseer_.getRemainings();
+    const auto endTime         = inputConfig_.workingHours.second.format();
+    const auto eventType       = static_cast<unsigned int>(EventType::OUTPUT_CLIENT_KICK);
 
-    std::sort(remainings.begin(), remainings.end());
+    auto realRemainings = std::set(totalRemainings.begin(), totalRemainings.end());
 
-    for (std::string_view clientName : remainings) {
+    for (std::string_view clientName : realRemainings) {
         std::cout << std::format("{} {} {}\n", endTime, eventType, clientName);
     }
 }

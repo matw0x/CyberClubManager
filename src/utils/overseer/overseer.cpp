@@ -1,7 +1,5 @@
 #include "overseer.h"
 
-#include <cstdlib>
-
 std::vector<Revenue> Overseer::getRevenue() const noexcept { return revenues_; }
 
 void Overseer::prepare(unsigned int tableCount) noexcept { revenues_.resize(tableCount); }
@@ -81,3 +79,7 @@ std::vector<std::string> Overseer::getRemainings() const noexcept {
 
     return remainings;
 }
+
+void startCalculate(unsigned int tableNumber, Time start) noexcept {}
+
+void Overseer::calculateRevenue() noexcept {}
