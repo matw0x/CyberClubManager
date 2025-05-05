@@ -2,7 +2,10 @@
 
 std::vector<Revenue> Overseer::getRevenue() const noexcept { return revenues_; }
 
-void Overseer::prepare(unsigned int tableCount) noexcept { revenues_.resize(tableCount); }
+void Overseer::prepare(unsigned int tableCount, unsigned int costHour) noexcept {
+    revenues_.resize(tableCount);
+    costHour_ = costHour;
+}
 
 bool Overseer::isClientInside(const std::string& clientName) const noexcept { return sessionsCT_.contains(clientName); }
 
@@ -63,6 +66,12 @@ std::string Overseer::getFirstWaiter() noexcept {
     return clientName;
 }
 
+void Overseer::processRemainings(Time end) noexcept {
+    for (const auto& pair : sessionsTC_) {
+        calculateRevenue(pair.first, end);
+    }
+}
+
 std::vector<std::string> Overseer::getRemainings() const noexcept {
     std::vector<std::string> remainings(sessionsCT_.size() + waitingQueue_.size());
     size_t                   currentIndex = 0;
@@ -80,6 +89,22 @@ std::vector<std::string> Overseer::getRemainings() const noexcept {
     return remainings;
 }
 
-void startCalculate(unsigned int tableNumber, Time start) noexcept {}
+void Overseer::startCalculate(unsigned int tableNumber, Time start) noexcept { startSessionsTC_[tableNumber] = start; }
 
-void Overseer::calculateRevenue() noexcept {}
+void Overseer::calculateRevenue(unsigned int tableNumber, Time end) noexcept {
+    auto it    = startSessionsTC_.find(tableNumber);
+    auto start = it->second;
+    startSessionsTC_.erase(it);
+
+    auto duration        = end - start;
+    auto durationMinutes = duration.getMinutes();
+
+    int roundedHours = 0;
+    if (durationMinutes > 0) {
+        roundedHours = (durationMinutes + 59) / 60;
+    }
+
+    size_t tableIndex = tableNumber - 1;
+    revenues_[tableNumber - 1].cost += static_cast<unsigned int>(roundedHours * costHour_);
+    revenues_[tableNumber - 1].spentTime = duration + revenues_[tableNumber - 1].spentTime;
+}

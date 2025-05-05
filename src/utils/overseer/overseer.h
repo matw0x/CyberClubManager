@@ -15,17 +15,19 @@ class Overseer {
     std::unordered_map<unsigned int, Time>                       startSessionsTC_;
     std::vector<Revenue>                                         revenues_;
     std::queue<std::string>                                      waitingQueue_;
-
-    void freeSession(const std::string& clientName) noexcept;
+    unsigned int                                                 costHour_;
 
    public:
+    void                        freeSession(const std::string& clientName) noexcept;
+    std::vector<unsigned int>   getOccupiedTableNumbers() const noexcept;
     void                        startCalculate(unsigned int tableNumber, Time start) noexcept;
-    void                        calculateRevenue() noexcept;
+    void                        calculateRevenue(unsigned int tableNumber, Time end) noexcept;
+    void                        processRemainings(Time end) noexcept;
     void                        freeTable(const std::string& clientName) noexcept;
     std::optional<unsigned int> getTable(const std::string& clientName) const noexcept;
     std::vector<Revenue>        getRevenue() const noexcept;
     std::vector<std::string>    getRemainings() const noexcept;
-    void                        prepare(unsigned int tableCount) noexcept;
+    void                        prepare(unsigned int tableCount, unsigned int costHour) noexcept;
     void                        createClientSession(const std::string& clientName) noexcept;
     bool                        isClientInside(const std::string& clientName) const noexcept;
     bool        isClubWorking(Time clientArrivalTime, std::pair<Time, Time> workingHours) const noexcept;

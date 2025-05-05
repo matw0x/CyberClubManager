@@ -18,7 +18,7 @@ class Manager {
     void printEndWorkingTime() const noexcept;
     void printRevenue() const noexcept;
     void printEvent(const Event& event, bool error = false) const noexcept;
-    void printRemainings() const noexcept;
+    void printRemainings() noexcept;
     void processEvents() noexcept;
     void analyzeEvent(Event& event) noexcept;
     void printEventIfError(const Event& originalEvent, const Event& maybeErrorEvent) const noexcept;

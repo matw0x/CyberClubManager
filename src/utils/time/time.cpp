@@ -17,7 +17,15 @@ Time Time::parse(const std::string& timeString) {
     throwRuntimeError();
 }
 
-Time Time::operator-(const Time& other) const { return Time(minutes_ - other.minutes_); }
+Time Time::operator-(const Time& other) const noexcept {
+    if (minutes_ >= other.minutes_) {
+        return Time(minutes_ - other.minutes_);
+    }
+
+    return Time((24 * 60 - other.minutes_) + minutes_);
+}
+
+Time Time::operator+(const Time& other) const noexcept { return Time(minutes_ + other.minutes_); }
 
 std::string Time::format() const {
     time_t hours   = minutes_ / 60;
@@ -25,3 +33,5 @@ std::string Time::format() const {
 
     return std::format("{:02d}:{:02d}", hours, minutes);
 }
+
+unsigned int Time::getMinutes() const noexcept { return minutes_; }

@@ -3,7 +3,7 @@
 void Manager::run(int argc, const char* const argv[]) {
     validator_.validateArgsCmd(argc, argv);
     inputConfig_ = parser_.parseInputConfig(argv[1], validator_);
-    overseer_.prepare(inputConfig_.tableCount);
+    overseer_.prepare(inputConfig_.tableCount, inputConfig_.hourCost);
     monitor();
 }
 
@@ -45,15 +45,21 @@ void Manager::handleClientSat(Event& event) noexcept {
         return;
     }
 
-    auto clientName = overseer_.whoSitting(*event.tableNumber);
+    auto oldTableNumber = overseer_.getTable(event.clientNameOrMsg);
+    auto clientName     = overseer_.whoSitting(*event.tableNumber);
     if (!clientName.empty()) {
         event.clientNameOrMsg = EventMessages::PlaceIsBusy;
         event.type            = EventType::OUTPUT_ERROR;
         return;
     }
 
-    overseer_.freeTable(event.clientNameOrMsg);
+    if (oldTableNumber) {
+        overseer_.calculateRevenue(*oldTableNumber, event.time);
+        overseer_.freeTable(event.clientNameOrMsg);
+    }
+
     overseer_.putClient(event.clientNameOrMsg, *event.tableNumber);
+    overseer_.startCalculate(*event.tableNumber, event.time);
 }
 
 void Manager::handleClientWaiting(Event& event) noexcept {
@@ -80,10 +86,16 @@ void Manager::handleClientLeft(Event& event) noexcept {
     }
 
     auto tableNumber = overseer_.getTable(event.clientNameOrMsg);
-    overseer_.eraseFromClub(event.clientNameOrMsg);
+    if (tableNumber) {
+        overseer_.calculateRevenue(*tableNumber, event.time);
+        overseer_.freeTable(event.clientNameOrMsg);
+    }
+
+    overseer_.freeSession(event.clientNameOrMsg);
 
     if (auto clientName = overseer_.getFirstWaiter(); !clientName.empty() && tableNumber) {
         overseer_.putClient(clientName, *tableNumber);
+        overseer_.startCalculate(*tableNumber, event.time);
         event.type            = EventType::OUTPUT_CLIENT_SAT;
         event.clientNameOrMsg = clientName;
         event.tableNumber     = tableNumber;
@@ -142,7 +154,9 @@ void Manager::monitor() noexcept {
     printRevenue();
 }
 
-void Manager::printRemainings() const noexcept {
+void Manager::printRemainings() noexcept {
+    overseer_.processRemainings(inputConfig_.workingHours.second);
+
     auto       totalRemainings = overseer_.getRemainings();
     const auto endTime         = inputConfig_.workingHours.second.format();
     const auto eventType       = static_cast<unsigned int>(EventType::OUTPUT_CLIENT_KICK);
