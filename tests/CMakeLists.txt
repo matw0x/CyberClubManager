@@ -48,15 +48,6 @@ add_test(
 )
 
 add_test(
-    NAME base
-    COMMAND ${Python3_EXECUTABLE} ${RUN_TEST_SCRIPT}
-            "${CMAKE_CURRENT_SOURCE_DIR}/base/expected_output.txt"
-            --
-            "$<TARGET_FILE:ccm>"
-            "${CMAKE_CURRENT_SOURCE_DIR}/base/valid_input.txt"
-)
-
-add_test(
     NAME parser_empty_line
     COMMAND ${Python3_EXECUTABLE} ${RUN_TEST_SCRIPT}
             "${CMAKE_CURRENT_SOURCE_DIR}/parser_empty_line/expected_output.txt"
@@ -243,4 +234,58 @@ add_test(
             --
             "$<TARGET_FILE:ccm>"
             "${CMAKE_CURRENT_SOURCE_DIR}/parser_event_invalid_format_10/invalid_input.txt"
+)
+
+add_test(
+    NAME business_logic_1
+    COMMAND ${Python3_EXECUTABLE} ${RUN_TEST_SCRIPT}
+            "${CMAKE_CURRENT_SOURCE_DIR}/business_logic_1/expected_output.txt"
+            --
+            "$<TARGET_FILE:ccm>"
+            "${CMAKE_CURRENT_SOURCE_DIR}/business_logic_1/valid_input.txt"
+)
+
+add_test(
+    NAME business_logic_2
+    COMMAND ${Python3_EXECUTABLE} ${RUN_TEST_SCRIPT}
+            "${CMAKE_CURRENT_SOURCE_DIR}/business_logic_2/expected_output.txt"
+            --
+            "$<TARGET_FILE:ccm>"
+            "${CMAKE_CURRENT_SOURCE_DIR}/business_logic_2/valid_input.txt"
+)
+
+add_test(
+    NAME business_logic_3
+    COMMAND ${Python3_EXECUTABLE} ${RUN_TEST_SCRIPT}
+            "${CMAKE_CURRENT_SOURCE_DIR}/business_logic_3/expected_output.txt"
+            --
+            "$<TARGET_FILE:ccm>"
+            "${CMAKE_CURRENT_SOURCE_DIR}/business_logic_3/valid_input.txt"
+)
+
+add_test(
+    NAME business_logic_4
+    COMMAND ${Python3_EXECUTABLE} ${RUN_TEST_SCRIPT}
+            "${CMAKE_CURRENT_SOURCE_DIR}/business_logic_4/expected_output.txt"
+            --
+            "$<TARGET_FILE:ccm>"
+            "${CMAKE_CURRENT_SOURCE_DIR}/business_logic_4/valid_input.txt"
+)
+
+add_test(
+    NAME business_logic_5
+    COMMAND ${Python3_EXECUTABLE} ${RUN_TEST_SCRIPT}
+            "${CMAKE_CURRENT_SOURCE_DIR}/business_logic_5/expected_output.txt"
+            --
+            "$<TARGET_FILE:ccm>"
+            "${CMAKE_CURRENT_SOURCE_DIR}/business_logic_5/valid_input.txt"
+)
+
+add_test(
+    NAME business_logic_6
+    COMMAND ${Python3_EXECUTABLE} ${RUN_TEST_SCRIPT}
+            "${CMAKE_CURRENT_SOURCE_DIR}/business_logic_6/expected_output.txt"
+            --
+            "$<TARGET_FILE:ccm>"
+            "${CMAKE_CURRENT_SOURCE_DIR}/business_logic_6/valid_input.txt"
 )

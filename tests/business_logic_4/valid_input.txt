@@ -1,0 +1,9 @@
+2
+10:00 18:00
+50
+10:10 1 first-client
+10:15 2 first-client 1
+10:20 1 second-client
+10:25 2 second-client 2
+18:10 4 first-client
+18:20 4 second-client
