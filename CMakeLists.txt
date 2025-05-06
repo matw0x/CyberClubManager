@@ -13,3 +13,15 @@ add_executable(
     src/utils/time/time.cpp
     src/utils/overseer/overseer.cpp
 )
+
+option(BUILD_TESTS "Build and configure tests" ON)
+
+if(BUILD_TESTS)
+    find_package(Python3 QUIET)
+    if(Python3_FOUND)
+        enable_testing()
+        add_subdirectory(tests)
+    else()
+        message(WARNING "Python 3 not found. Tests are enabled in configuration but cannot be built/run.")
+    endif()
+endif()
