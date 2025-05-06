@@ -96,8 +96,18 @@ void Overseer::calculateRevenue(unsigned int tableNumber, Time end) noexcept {
     auto start = it->second;
     startSessionsTC_.erase(it);
 
-    auto duration        = end - start;
-    auto durationMinutes = duration.getMinutes();
+    unsigned int durationMinutes = 0;
+    if (end.getMinutes() >= start.getMinutes()) {
+        durationMinutes = end.getMinutes() - start.getMinutes();
+    } else {
+        int minutesPassed = end.getMinutes() - start.getMinutes();
+
+        if (minutesPassed < 0) {
+            durationMinutes = 0;
+        } else {
+            durationMinutes = static_cast<unsigned int>(minutesPassed);
+        }
+    }
 
     int roundedHours = 0;
     if (durationMinutes > 0) {
@@ -105,6 +115,6 @@ void Overseer::calculateRevenue(unsigned int tableNumber, Time end) noexcept {
     }
 
     size_t tableIndex = tableNumber - 1;
-    revenues_[tableNumber - 1].cost += static_cast<unsigned int>(roundedHours * costHour_);
-    revenues_[tableNumber - 1].spentTime = duration + revenues_[tableNumber - 1].spentTime;
+    revenues_[tableIndex].cost += static_cast<unsigned int>(roundedHours * costHour_);
+    revenues_[tableIndex].spentTime = Time(durationMinutes) + revenues_[tableIndex].spentTime;
 }
