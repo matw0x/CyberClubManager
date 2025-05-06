@@ -10,7 +10,7 @@ void Overseer::prepare(unsigned int tableCount, unsigned int costHour) noexcept 
 bool Overseer::isClientInside(const std::string& clientName) const noexcept { return sessionsCT_.contains(clientName); }
 
 bool Overseer::isClubWorking(Time clientArrivalTime, std::pair<Time, Time> workingHours) const noexcept {
-    return workingHours.first <= clientArrivalTime && clientArrivalTime < workingHours.second;
+    return workingHours.first <= clientArrivalTime && clientArrivalTime <= workingHours.second;
 }
 
 void Overseer::createClientSession(const std::string& clientName) noexcept { sessionsCT_[clientName] = {}; }
